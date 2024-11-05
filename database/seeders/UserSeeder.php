@@ -13,12 +13,16 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'name' => 'Admin Tokoponik',
-            'username' => 'admintokoponik',
-            'password' => 'admin123',
-            'role' => 'admin',
-            'phone_number' => '081234567890'
-        ]);
+        $roles = ['admin', 'manager', 'cs', 'staff', 'customer'];
+
+        for ($i = 0; $i < count($roles); $i++) {
+            User::create([
+                'name' => $roles[$i] . ' Tokoponik',
+                'username' => $roles[$i] . 'tokoponik',
+                'password' => $roles[$i] . '123',
+                'role' => $roles[$i],
+                'phone_number' => '081234567890'
+            ]);
+        }
     }
 }
