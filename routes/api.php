@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BankController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
@@ -37,10 +38,18 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
     });
 
     Route::prefix('addresses')->group(function () {
-        Route::get('/', [AddressController::class, 'index'])->name('addresse.index');
-        Route::get('/{id}', [AddressController::class, 'show'])->name('addresse.show');
-        Route::post('/store', [AddressController::class, 'store'])->name('addresse.store');
-        Route::post('/{id}/update', [AddressController::class, 'update'])->name('addresse.update');
-        Route::delete('/{id}/destroy', [AddressController::class, 'destroy'])->name('addresse.destroy');
+        Route::get('/', [AddressController::class, 'index'])->name('address.index');
+        Route::get('/{id}', [AddressController::class, 'show'])->name('address.show');
+        Route::post('/store', [AddressController::class, 'store'])->name('address.store');
+        Route::post('/{id}/update', [AddressController::class, 'update'])->name('address.update');
+        Route::delete('/{id}/destroy', [AddressController::class, 'destroy'])->name('address.destroy');
+    });
+
+    Route::prefix('banks')->group(function () {
+        Route::get('/', [BankController::class, 'index'])->name('banks.index');
+        Route::get('/{id}', [BankController::class, 'show'])->name('banks.show');
+        Route::post('/store', [BankController::class, 'store'])->name('banks.store');
+        Route::post('/{id}/update', [BankController::class, 'update'])->name('banks.update');
+        Route::delete('/{id}/destroy', [BankController::class, 'destroy'])->name('banks.destroy');
     });
 });
