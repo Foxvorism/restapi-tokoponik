@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Blog;
+use App\Models\BlogPic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -12,7 +13,7 @@ class BlogController extends Controller
 {
     public function index()
     {
-        $blogs = Blog::with('user')->get();
+        $blogs = Blog::with('user')->with('blog_pics')->get();
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'Success',
@@ -43,7 +44,7 @@ class BlogController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required',
             'description' => 'required',
-            'user_id' => 'required|exists:users,id',
+            'photos.*' => 'required|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
         if ($validator->fails()) {
@@ -56,12 +57,24 @@ class BlogController extends Controller
             $blog = Blog::create([
                 'title' => $request->title,
                 'description' => $request->description,
-                'user_id' => $request->user_id,
+                'user_id' => Auth::user()->id,
             ]);
+
+            if ($request->hasFile('photos')) {
+                foreach ($request->file('photos') as $index => $file) {
+                    $fileName = "blog" . $blog->id . "pic" . ($index + 1) . "." . $file->getClientOriginalExtension();;
+                    $path = $file->storeAs('photos', $fileName, 'public');
+                    BlogPic::create([
+                        'blog_id' => $blog->id,
+                        'pic_path' => 'storage/' . $path,
+                    ]);
+                }
+            }
+
             return response()->json([
                 'status' => Response::HTTP_CREATED,
-                'message' => 'Blog created successfully',
-                'data' => $blog
+                'message' => 'Blog created successfully with photos',
+                'data' => $blog->load('blog_pics'),
             ], Response::HTTP_CREATED);
         }
     }
