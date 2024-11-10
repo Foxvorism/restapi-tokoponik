@@ -38,6 +38,24 @@ class AddressController extends Controller
         }
     }
 
+    public function users(string $user_id)
+    {
+        $address = Address::with('user')->where('user_id', $user_id)->get();
+
+        if (!$address) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Address not found'
+            ]);
+        } else {
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Success',
+                'data' => $address
+            ], Response::HTTP_OK);
+        }
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
