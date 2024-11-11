@@ -13,7 +13,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::get();
+        $products = Product::with('product_pics')->get();
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'Success',
@@ -62,11 +62,6 @@ class ProductController extends Controller
                 'price' => $request->price,
                 'type' => $request->type
             ]);
-            return response()->json([
-                'status' => Response::HTTP_CREATED,
-                'message' => 'Product created successfully',
-                'data' => $product
-            ], Response::HTTP_CREATED);
 
             if ($request->hasFile('photos')) {
                 foreach ($request->file('photos') as $index => $file) {
@@ -78,6 +73,12 @@ class ProductController extends Controller
                     ]);
                 }
             }
+
+            return response()->json([
+                'status' => Response::HTTP_CREATED,
+                'message' => 'Product created successfully',
+                'data' => $product
+            ], Response::HTTP_CREATED);
         }
     }
 

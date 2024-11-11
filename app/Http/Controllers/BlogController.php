@@ -14,7 +14,7 @@ class BlogController extends Controller
 {
     public function index()
     {
-        $blogs = Blog::with('user')->with('blog_pics')->get();
+        $blogs = Blog::with('user')->with('blog_pics')->with('blog_links')->get();
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'Success',
