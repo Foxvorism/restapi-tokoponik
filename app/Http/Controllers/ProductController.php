@@ -65,7 +65,7 @@ class ProductController extends Controller
 
             if ($request->hasFile('photos')) {
                 foreach ($request->file('photos') as $index => $file) {
-                    $fileName = "product" . $product->id . "pic" . ($index + 1) . "." . $file->getClientOriginalExtension();;
+                    $fileName = "product" . $product->id . "pic" . ($index + 1) . "." . $file->getClientOriginalExtension();
                     $path = $file->storeAs('photos', $fileName, 'public');
                     ProductPic::create([
                         'product_id' => $product->id,

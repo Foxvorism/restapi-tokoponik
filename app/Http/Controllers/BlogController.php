@@ -65,7 +65,7 @@ class BlogController extends Controller
 
             if ($request->hasFile('photos')) {
                 foreach ($request->file('photos') as $index => $file) {
-                    $fileName = "blog" . $blog->id . "pic" . ($index + 1) . "." . $file->getClientOriginalExtension();;
+                    $fileName = "blog" . $blog->id . "pic" . ($index + 1) . "." . $file->getClientOriginalExtension();
                     $path = $file->storeAs('photos', $fileName, 'public');
                     BlogPic::create([
                         'blog_id' => $blog->id,
