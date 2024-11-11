@@ -4,6 +4,7 @@ use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -52,5 +53,13 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
         Route::post('/store', [BankController::class, 'store'])->name('banks.store');
         Route::post('/{id}/update', [BankController::class, 'update'])->name('banks.update');
         Route::delete('/{id}/destroy', [BankController::class, 'destroy'])->name('banks.destroy');
+    });
+
+    Route::prefix('carts')->group(function() {
+        Route::get('/', [CartController::class, 'index'])->name('carts.index');
+        Route::get('/{id}', [CartController::class, 'show'])->name('carts.show');
+        Route::post('/store', [CartController::class, 'store'])->name('carts.store');
+        Route::post('/{id}/update', [CartController::class, 'update'])->name('carts.update');
+        Route::delete('/{id}/destroy', [CartController::class, 'destroy'])->name('carts.destroy');
     });
 });
