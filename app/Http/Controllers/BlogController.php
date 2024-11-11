@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Blog;
 use App\Models\BlogPic;
+use App\Models\BlogLink;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -44,7 +45,9 @@ class BlogController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required',
             'description' => 'required',
-            'photos.*' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+            'photos.*' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'links' => 'array',
+            'links.*' => 'url'
         ]);
 
         if ($validator->fails()) {
@@ -67,6 +70,15 @@ class BlogController extends Controller
                     BlogPic::create([
                         'blog_id' => $blog->id,
                         'pic_path' => 'storage/' . $path,
+                    ]);
+                }
+            }
+
+            if ($request->has('links')) {
+                foreach ($request->links as $link) {
+                    BlogLink::create([
+                        'blog_id' => $blog->id,
+                        'link' => $link
                     ]);
                 }
             }
