@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductPic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -44,7 +45,8 @@ class ProductController extends Controller
             'name' => 'required',
             'description' => 'required',
             'price' => 'required',
-            'type' => 'required'
+            'type' => 'required',
+            'photos.*' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -65,6 +67,17 @@ class ProductController extends Controller
                 'message' => 'Product created successfully',
                 'data' => $product
             ], Response::HTTP_CREATED);
+
+            if ($request->hasFile('photos')) {
+                foreach ($request->file('photos') as $index => $file) {
+                    $fileName = "product" . $product->id . "pic" . ($index + 1) . "." . $file->getClientOriginalExtension();;
+                    $path = $file->storeAs('photos', $fileName, 'public');
+                    ProductPic::create([
+                        'product_id' => $product->id,
+                        'path' => 'storage/'. $path
+                    ]);
+                }
+            }
         }
     }
 
