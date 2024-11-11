@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('district');
             $table->string('subdistrict');
             $table->string('post_code');
+            $table->string('receiver_name');
             $table->timestamps();
         });
     }
