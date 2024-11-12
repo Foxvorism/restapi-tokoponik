@@ -6,6 +6,7 @@ use App\Http\Controllers\BankController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -69,5 +70,14 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
         Route::post('/{id}/add-proof', [TransactionController::class, 'addProof'])->name('transactions.add-proof');
         Route::post('/{id}/update-status', [TransactionController::class, 'updateStatus'])->name('transactions.update-status');
         Route::delete('/{id}/destroy', [TransactionController::class, 'destroy'])->name('transaction.destroy');
+    });
+
+    Route::prefix('ratings')->group(function() {
+        Route::get('/', [RatingController::class, 'index'])->name('ratings.index');
+        Route::post('/store', [RatingController::class, 'store'])->name('ratings.store');
+        Route::get('/{id}', [RatingController::class, 'show'])->name('ratings.show');
+        Route::post('/{id}/update', [RatingController::class, 'update'])->name('ratings.update');
+        Route::delete('/{id}/destroy', [RatingController::class, 'destroy'])->name('ratings.destroy');
+        Route::get('/get-average/{product_id}', [RatingController::class, 'getAverage'])->name('ratings.get-average');
     });
 });

@@ -25,4 +25,9 @@ class Product extends Model
     {
         return $this->hasMany(TransactionDetail::class);
     }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
 }
