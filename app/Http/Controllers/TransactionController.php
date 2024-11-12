@@ -99,25 +99,24 @@ class TransactionController extends Controller
                 'message' => 'Validation error',
                 'errors' => $validator->errors(),
             ], Response::HTTP_BAD_REQUEST);
-        }
-
-        // Save the proof image
-        if ($request->hasFile('proof')) {
-            foreach ($request->file('proof') as $index => $file) {
-                $fileName = "proof" . $transaction->id . "pic" . ($index + 1) . "." . $file->getClientOriginalExtension();
+        } else {
+            // Save the proof image
+            if ($request->hasFile('proof')) {
+                $file = $request->file('proof');
+                $fileName = "proof" . $transaction->id . "pic." . $file->getClientOriginalExtension();
                 $path = $file->storeAs('proof', $fileName, 'public');
+                
                 $transaction->update([
                     'proof' => $path,
                     'status' => 'waiting for verification',
                 ]);
             }
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Proof uploaded successfully',
+                'data' => $transaction,
+            ], Response::HTTP_OK);
         }
-
-        return response()->json([
-            'status' => Response::HTTP_OK,
-            'message' => 'Proof uploaded successfully',
-            'data' => $transaction,
-        ], Response::HTTP_OK);
     }
 
     public function updateStatus(Request $request, string $id)
