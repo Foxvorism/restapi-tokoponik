@@ -6,6 +6,7 @@ use App\Http\Controllers\BankController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -60,5 +61,13 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
         Route::post('/store', [CartController::class, 'store'])->name('carts.store');
         Route::post('/{id}/update', [CartController::class, 'update'])->name('carts.update');
         Route::delete('/{id}/destroy', [CartController::class, 'destroy'])->name('carts.destroy');
+    });
+
+    Route::prefix('transactions')->group(function() {
+        Route::get('/', [TransactionController::class, 'index'])->name('transactions.index');
+        Route::post('/checkout', [TransactionController::class, 'checkout'])->name('transaction.checkout');
+        Route::post('/{id}/add-proof', [TransactionController::class, 'addProof'])->name('transactions.add-proof');
+        Route::post('/{id}/update-status', [TransactionController::class, 'updateStatus'])->name('transactions.update-status');
+        Route::delete('/{id}/destroy', [TransactionController::class, 'destroy'])->name('transaction.destroy');
     });
 });
