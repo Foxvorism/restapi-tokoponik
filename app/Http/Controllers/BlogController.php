@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Blog;
 use App\Models\BlogPic;
+use App\Models\BlogLink;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -13,7 +14,7 @@ class BlogController extends Controller
 {
     public function index()
     {
-        $blogs = Blog::with('user')->with('blog_pics')->get();
+        $blogs = Blog::with('user')->with('blog_pics')->with('blog_links')->get();
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'Success',
@@ -44,7 +45,9 @@ class BlogController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required',
             'description' => 'required',
-            'photos.*' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+            'photos.*' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'links' => 'array',
+            'links.*' => 'url'
         ]);
 
         if ($validator->fails()) {
@@ -62,11 +65,20 @@ class BlogController extends Controller
 
             if ($request->hasFile('photos')) {
                 foreach ($request->file('photos') as $index => $file) {
-                    $fileName = "blog" . $blog->id . "pic" . ($index + 1) . "." . $file->getClientOriginalExtension();;
+                    $fileName = "blog" . $blog->id . "pic" . ($index + 1) . "." . $file->getClientOriginalExtension();
                     $path = $file->storeAs('photos', $fileName, 'public');
                     BlogPic::create([
                         'blog_id' => $blog->id,
                         'pic_path' => 'storage/' . $path,
+                    ]);
+                }
+            }
+
+            if ($request->has('links')) {
+                foreach ($request->links as $link) {
+                    BlogLink::create([
+                        'blog_id' => $blog->id,
+                        'link' => $link
                     ]);
                 }
             }

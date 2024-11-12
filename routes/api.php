@@ -4,13 +4,23 @@ use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RatingController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum')->name('logout');
+Route::prefix('products')->group(function () {
+    Route::get('/', [ProductController::class, 'index'])->name('product.index');
+    Route::get('/{id}', [ProductController::class, 'show'])->name('product.show');
+    Route::post('/store', [ProductController::class, 'store'])->name('product.store');
+    Route::post('/{id}/update', [ProductController::class, 'update'])->name('product.update');
+    Route::delete('/{id}/destroy', [ProductController::class, 'destroy'])->name('product.destroy');
+});
 
 Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
     Route::prefix('users')->group(function () {
@@ -29,14 +39,6 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
         Route::delete('/{id}/destroy', [BlogController::class, 'destroy'])->name('blog.destroy');
     });
 
-    Route::prefix('products')->group(function () {
-        Route::get('/', [ProductController::class, 'index'])->name('product.index');
-        Route::get('/{id}', [ProductController::class, 'show'])->name('product.show');
-        Route::post('/store', [ProductController::class, 'store'])->name('product.store');
-        Route::post('/{id}/update', [ProductController::class, 'update'])->name('product.update');
-        Route::delete('/{id}/destroy', [ProductController::class, 'destroy'])->name('product.destroy');
-    });
-
     Route::prefix('addresses')->group(function () {
         Route::get('/', [AddressController::class, 'index'])->name('address.index');
         Route::get('/{id}', [AddressController::class, 'show'])->name('address.show');
@@ -52,5 +54,30 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
         Route::post('/store', [BankController::class, 'store'])->name('banks.store');
         Route::post('/{id}/update', [BankController::class, 'update'])->name('banks.update');
         Route::delete('/{id}/destroy', [BankController::class, 'destroy'])->name('banks.destroy');
+    });
+
+    Route::prefix('carts')->group(function() {
+        Route::get('/', [CartController::class, 'index'])->name('carts.index');
+        Route::get('/{id}', [CartController::class, 'show'])->name('carts.show');
+        Route::post('/store', [CartController::class, 'store'])->name('carts.store');
+        Route::post('/{id}/update', [CartController::class, 'update'])->name('carts.update');
+        Route::delete('/{id}/destroy', [CartController::class, 'destroy'])->name('carts.destroy');
+    });
+
+    Route::prefix('transactions')->group(function() {
+        Route::get('/', [TransactionController::class, 'index'])->name('transactions.index');
+        Route::post('/checkout', [TransactionController::class, 'checkout'])->name('transaction.checkout');
+        Route::post('/{id}/add-proof', [TransactionController::class, 'addProof'])->name('transactions.add-proof');
+        Route::post('/{id}/update-status', [TransactionController::class, 'updateStatus'])->name('transactions.update-status');
+        Route::delete('/{id}/destroy', [TransactionController::class, 'destroy'])->name('transaction.destroy');
+    });
+
+    Route::prefix('ratings')->group(function() {
+        Route::get('/', [RatingController::class, 'index'])->name('ratings.index');
+        Route::post('/store', [RatingController::class, 'store'])->name('ratings.store');
+        Route::get('/{id}', [RatingController::class, 'show'])->name('ratings.show');
+        Route::post('/{id}/update', [RatingController::class, 'update'])->name('ratings.update');
+        Route::delete('/{id}/destroy', [RatingController::class, 'destroy'])->name('ratings.destroy');
+        Route::get('/get-average/{product_id}', [RatingController::class, 'getAverage'])->name('ratings.get-average');
     });
 });

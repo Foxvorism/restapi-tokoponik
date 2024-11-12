@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductPic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -12,7 +13,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::get();
+        $products = Product::with('product_pics')->get();
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'Success',
@@ -44,7 +45,8 @@ class ProductController extends Controller
             'name' => 'required',
             'description' => 'required',
             'price' => 'required',
-            'type' => 'required'
+            'type' => 'required',
+            'photos.*' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -60,6 +62,18 @@ class ProductController extends Controller
                 'price' => $request->price,
                 'type' => $request->type
             ]);
+
+            if ($request->hasFile('photos')) {
+                foreach ($request->file('photos') as $index => $file) {
+                    $fileName = "product" . $product->id . "pic" . ($index + 1) . "." . $file->getClientOriginalExtension();
+                    $path = $file->storeAs('photos', $fileName, 'public');
+                    ProductPic::create([
+                        'product_id' => $product->id,
+                        'path' => 'storage/'. $path
+                    ]);
+                }
+            }
+
             return response()->json([
                 'status' => Response::HTTP_CREATED,
                 'message' => 'Product created successfully',

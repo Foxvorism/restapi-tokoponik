@@ -20,4 +20,9 @@ class Blog extends Model
     {
         return $this->hasMany(BlogPic::class);
     }
+
+    public function blog_links()
+    {
+        return $this->hasMany(BlogLink::class);
+    }
 }

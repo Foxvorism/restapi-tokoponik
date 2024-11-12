@@ -66,6 +66,7 @@ class AddressController extends Controller
             'district' => 'required',
             'subdistrict' => 'required',
             'post_code' => 'required',
+            'receiver_name' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -83,6 +84,7 @@ class AddressController extends Controller
                 'district' => $request->district,
                 'subdistrict' => $request->subdistrict,
                 'post_code' => $request->post_code,
+                'receiver_name' => $request->receiver_name,
             ]);
             return response()->json([
                 'status' => Response::HTTP_CREATED,
@@ -110,6 +112,7 @@ class AddressController extends Controller
                 'district' => 'required',
                 'subdistrict' => 'required',
                 'post_code' => 'required',
+                'receiver_name' => 'required',
             ]);
 
             if ($validator->fails()) {
