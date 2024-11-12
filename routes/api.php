@@ -12,6 +12,13 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum')->name('logout');
+Route::prefix('products')->group(function () {
+    Route::get('/', [ProductController::class, 'index'])->name('product.index');
+    Route::get('/{id}', [ProductController::class, 'show'])->name('product.show');
+    Route::post('/store', [ProductController::class, 'store'])->name('product.store');
+    Route::post('/{id}/update', [ProductController::class, 'update'])->name('product.update');
+    Route::delete('/{id}/destroy', [ProductController::class, 'destroy'])->name('product.destroy');
+});
 
 Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
     Route::prefix('users')->group(function () {
@@ -28,14 +35,6 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
         Route::post('/store', [BlogController::class, 'store'])->name('blog.store');
         Route::post('/{id}/update', [BlogController::class, 'update'])->name('blog.update');
         Route::delete('/{id}/destroy', [BlogController::class, 'destroy'])->name('blog.destroy');
-    });
-
-    Route::prefix('products')->group(function () {
-        Route::get('/', [ProductController::class, 'index'])->name('product.index');
-        Route::get('/{id}', [ProductController::class, 'show'])->name('product.show');
-        Route::post('/store', [ProductController::class, 'store'])->name('product.store');
-        Route::post('/{id}/update', [ProductController::class, 'update'])->name('product.update');
-        Route::delete('/{id}/destroy', [ProductController::class, 'destroy'])->name('product.destroy');
     });
 
     Route::prefix('addresses')->group(function () {

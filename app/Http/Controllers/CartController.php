@@ -23,10 +23,8 @@ class CartController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|exists:users,id',
             'product_id' => 'required|exists:products,id',
             'qty' => 'required|integer|min:1',
-            'status' => 'required|in:pending,checkout',
         ]);
 
         if ($validator->fails()) {
@@ -35,19 +33,20 @@ class CartController extends Controller
                 'message' => 'Validation error',
                 'errors' => $validator->errors()
             ], Response::HTTP_BAD_REQUEST);
-        } else {
-            $cart = Cart::create([
-                'user_id' => $request->user_id,
-                'product_id' => $request->product_id,
-                'qty' => $request->qty,
-                'status' => $request->status,
-            ]);
-            return response()->json([
-                'status' => Response::HTTP_CREATED,
-                'message' => 'Product created successfully',
-                'data' => $cart
-            ],Response::HTTP_CREATED,);
         }
+
+        $cart = Cart::create([
+            'user_id' => Auth::id(),
+            'product_id' => $request->product_id,
+            'qty' => $request->qty,
+            'status' => 'pending',
+        ]);
+
+        return response()->json([
+            'status' => Response::HTTP_CREATED,
+            'message' => 'Product added to cart successfully',
+            'data' => $cart
+        ], Response::HTTP_CREATED);
     }
 
     public function show(string $id)
@@ -77,28 +76,29 @@ class CartController extends Controller
                 'status' => Response::HTTP_FORBIDDEN,
                 'message' => 'Not authorized',
             ], Response::HTTP_FORBIDDEN);
-        } else {
-            $validator = Validator::make($request->all(), [
-                'product_id' => 'required|exists:products,id',
-                'qty' => 'required|integer|min:1',
-                'status' => 'required|in:pending,checkout',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => Response::HTTP_BAD_REQUEST,
-                    'message' => 'Validation error',
-                    'errors' => $validator->errors()
-                ], Response::HTTP_BAD_REQUEST);
-            } else {
-                $cart->update($request->all());
-                return response()->json([
-                    'status' => Response::HTTP_OK,
-                    'message' => 'Cart item updated successfully',
-                    'data' => $cart
-                ], Response::HTTP_OK);
-            }
         }
+
+        $validator = Validator::make($request->all(), [
+            'qty' => 'required|integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $cart->update([
+            'qty' => $request->qty,
+        ]);
+
+        return response()->json([
+            'status' => Response::HTTP_CREATED,
+            'message' => 'Cart item updated successfully',
+            'data' => $cart
+        ], Response::HTTP_CREATED);
     }
 
     public function destroy(string $id)
@@ -114,15 +114,15 @@ class CartController extends Controller
             if (!$cart) {
             return response()->json([
                 'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'Cart not found'
+                'message' => 'Cart item not found'
                 ]);
             } else {
                 $cart->delete();
                 return response()->json([
-                    'status' => Response::HTTP_OK,
+                    'status' => Response::HTTP_CREATED,
                     'message' => 'Cart item deleted successfully',
                     'data' => $cart
-                ], Response::HTTP_OK);
+                ], Response::HTTP_CREATED);
             }
         }
     }
