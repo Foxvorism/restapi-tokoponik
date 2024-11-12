@@ -168,7 +168,7 @@ class TransactionController extends Controller
         }
 
         // Delete associated transaction details
-        $transaction->transactionDetails()->delete();
+        $transaction->transaction_detail()->delete();
 
         // Delete the transaction itself
         $transaction->delete();
