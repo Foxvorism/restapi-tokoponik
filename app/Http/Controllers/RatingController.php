@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Rating;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,7 +28,7 @@ class RatingController extends Controller
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string'
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json([
                 'status' => Response::HTTP_BAD_REQUEST,
