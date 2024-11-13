@@ -40,7 +40,7 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
     Route::prefix('addresses')->group(function () {
         Route::get('/', [AddressController::class, 'index'])->name('address.index');
         Route::get('/{id}', [AddressController::class, 'show'])->name('address.show');
-        Route::get('/user/{user_id}', [AddressController::class, 'users'])->name('address.user');
+        Route::get('/id/user', [AddressController::class, 'user'])->name('address.user');
         Route::post('/store', [AddressController::class, 'store'])->name('address.store');
         Route::post('/{id}/update', [AddressController::class, 'update'])->name('address.update');
         Route::delete('/{id}/destroy', [AddressController::class, 'destroy'])->name('address.destroy');

@@ -38,9 +38,9 @@ class AddressController extends Controller
         }
     }
 
-    public function users(string $user_id)
+    public function user()
     {
-        $address = Address::with('user')->where('user_id', $user_id)->get();
+        $address = Address::with('user')->where('user_id', Auth::id())->get();
 
         if (!$address) {
             return response()->json([
@@ -76,7 +76,7 @@ class AddressController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         } else {
             $address = Address::create([
-                'user_id' => $request->user_id,
+                'user_id' => Auth::id(),
                 'address' => $request->address,
                 'note' => $request->note,
                 'province' => $request->province,
