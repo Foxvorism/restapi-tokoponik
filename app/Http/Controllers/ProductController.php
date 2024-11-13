@@ -108,6 +108,59 @@ class ProductController extends Controller
         }
     }
 
+    public function getByName(string $name)
+    {
+        $products = Product::where('name', 'LIKE', "%{$name}%")->with('product_pics')->get();
+
+        if ($products->isEmpty()) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'No products found with the given name'
+            ]);
+        } else {
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Success',
+                'data' => $products
+            ], Response::HTTP_OK);
+        }
+    }
+
+    public function getByCategory(string $category)
+    {
+        $products = Product::where('type', $category)->with('product_pics')->get();
+
+        if ($products->isEmpty()) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'No products found in the given category'
+            ]);
+        } else {
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Success',
+                'data' => $products
+            ], Response::HTTP_OK);
+        }
+    }
+
+    public function getWithLimit(int $limit)
+    {
+        $products = Product::with('product_pics')
+            ->leftJoin('ratings', 'products.id', '=', 'ratings.product_id')
+            ->select('products.*', \DB::raw('ROUND(AVG(ratings.rating), 2) as average_rating'))
+            ->groupBy('products.id')
+            ->orderBy('average_rating', 'desc')
+            ->limit($limit)
+            ->get();
+        
+        return response()->json([
+            'status' => Response::HTTP_OK,
+            'message' => 'Success',
+            'data' => $products
+        ], Response::HTTP_OK);
+    }
+
     public function destroy(string $id)
     {
         $product = Product::find($id);

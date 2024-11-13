@@ -20,6 +20,9 @@ Route::prefix('products')->group(function () {
     Route::post('/store', [ProductController::class, 'store'])->name('product.store');
     Route::post('/{id}/update', [ProductController::class, 'update'])->name('product.update');
     Route::delete('/{id}/destroy', [ProductController::class, 'destroy'])->name('product.destroy');
+    Route::get('/category/{type}', [ProductController::class, 'getByCategory'])->name('product.get-by-category');
+    Route::get('/search/{name}', [ProductController::class, 'getByName'])->name('product.get-by-name');
+    Route::get('/limit/{limit}', [ProductController::class, 'getWithLimit'])->name('product.get-with-limit');
 });
 
 Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
@@ -37,6 +40,8 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
         Route::post('/store', [BlogController::class, 'store'])->name('blog.store');
         Route::post('/{id}/update', [BlogController::class, 'update'])->name('blog.update');
         Route::delete('/{id}/destroy', [BlogController::class, 'destroy'])->name('blog.destroy');
+        Route::get('/search/{title}', [BlogController::class, 'getByTitle'])->name('blog.get-by-title');
+        Route::get('/limit/{limit}', [BlogController::class, 'getWithLimit'])->name('blog.get-with-limit');
     });
 
     Route::prefix('addresses')->group(function () {

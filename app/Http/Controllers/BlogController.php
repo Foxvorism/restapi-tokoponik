@@ -124,6 +124,35 @@ class BlogController extends Controller
         }
     }
 
+    public function getByTitle(string $title)
+    {
+        $blogs = Blog::with('user')->with('blog_pics')->with('blog_links')->where('title', 'like', '%' . $title . '%')->get();
+
+        if ($blogs->isEmpty()) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'No blogs found with the given title'
+            ], Response::HTTP_NOT_FOUND);
+        } else {
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Success',
+                'data' => $blogs
+            ], Response::HTTP_OK);
+        }
+    }
+
+    public function getWithLimit(int $limit)
+    {
+        $blogs = Blog::with('user')->with('blog_pics')->with('blog_links')->limit($limit)->get();
+
+        return response()->json([
+            'status' => Response::HTTP_OK,
+            'message' => 'Success',
+            'data' => $blogs
+        ], Response::HTTP_OK);
+    }
+
     public function destroy(string $id)
     {
         $blog = Blog::find($id);
