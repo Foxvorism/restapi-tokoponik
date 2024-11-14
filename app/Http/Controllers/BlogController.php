@@ -31,7 +31,7 @@ class BlogController extends Controller
 
     public function show(string $id)
     {
-        $blog = Blog::with('user')->find($id);
+        $blog = Blog::with('user')->with('blog_pics')->find($id);
 
         if (!$blog) {
             return response()->json([
@@ -39,6 +39,10 @@ class BlogController extends Controller
                 'message' => 'Blog not found'
             ]);
         } else {
+            $blog->blog_pics->each(function ($pic) {
+                $pic->pic_path = url($pic->pic_path);
+            });
+
             return response()->json([
                 'status' => Response::HTTP_OK,
                 'message' => 'Success',
@@ -141,6 +145,12 @@ class BlogController extends Controller
                 'message' => 'No blogs found with the given title'
             ], Response::HTTP_NOT_FOUND);
         } else {
+            $blogs->each(function ($blog) {
+                $blog->blog_pics->each(function ($pic) {
+                    $pic->pic_path = url($pic->pic_path);
+                });
+            });
+
             return response()->json([
                 'status' => Response::HTTP_OK,
                 'message' => 'Success',
@@ -153,6 +163,12 @@ class BlogController extends Controller
     {
         $blogs = Blog::with('user')->with('blog_pics')->with('blog_links')->limit($limit)->get();
 
+        $blogs->each(function ($blog) {
+            $blog->blog_pics->each(function ($pic) {
+                $pic->pic_path = url($pic->pic_path);
+            });
+        });
+        
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'Success',
