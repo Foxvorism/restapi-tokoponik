@@ -29,7 +29,7 @@ class ProductController extends Controller
 
     public function show(string $id)
     {
-        $product = Product::find($id);
+        $product = Product::with('product_pics')->find($id);
 
         if (!$product) {
             return response()->json([
@@ -37,6 +37,10 @@ class ProductController extends Controller
                 'message' => 'Product not found'
             ]);
         } else {
+            $product->product_pics->each(function ($pic) {
+                $pic->path = url($pic->path);
+            });
+
             return response()->json([
                 'status' => Response::HTTP_OK,
                 'message' => 'Success',
@@ -125,6 +129,12 @@ class ProductController extends Controller
                 'message' => 'No products found with the given name'
             ]);
         } else {
+            $products->each(function ($product) {
+                $product->product_pics->each(function ($pic) {
+                    $pic->path = url($pic->path);
+                });
+            });
+
             return response()->json([
                 'status' => Response::HTTP_OK,
                 'message' => 'Success',
@@ -143,6 +153,12 @@ class ProductController extends Controller
                 'message' => 'No products found in the given category'
             ]);
         } else {
+            $products->each(function ($product) {
+                $product->product_pics->each(function ($pic) {
+                    $pic->path = url($pic->path);
+                });
+            });
+
             return response()->json([
                 'status' => Response::HTTP_OK,
                 'message' => 'Success',
@@ -161,6 +177,12 @@ class ProductController extends Controller
             ->limit($limit)
             ->get();
         
+        $products->each(function ($product) {
+            $product->product_pics->each(function ($pic) {
+                $pic->path = url($pic->path);
+            });
+        });
+
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'Success',
