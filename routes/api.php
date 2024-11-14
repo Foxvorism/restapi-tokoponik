@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register'])->name('register');
@@ -84,5 +85,11 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
         Route::post('/{id}/update', [RatingController::class, 'update'])->name('ratings.update');
         Route::delete('/{id}/destroy', [RatingController::class, 'destroy'])->name('ratings.destroy');
         Route::get('/get-average/{product_id}', [RatingController::class, 'getAverage'])->name('ratings.get-average');
+    });
+
+    Route::prefix('wishlists')->group(function() {
+        Route::get('/id/user', [WishlistController::class, 'user'])->name('wishlists.user');
+        Route::post('/store', [WishlistController::class, 'store'])->name('wishlists.store');
+        Route::delete('/{id}/destroy', [WishlistController::class, 'destroy'])->name('wishlists.destroy');
     });
 });
