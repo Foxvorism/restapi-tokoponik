@@ -59,7 +59,7 @@ class AddressController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|exists:users,id',
+            'user_id' => 'exists:users,id',
             'address' => 'required',
             'note' => 'required',
             'province' => 'required',
@@ -105,7 +105,7 @@ class AddressController extends Controller
             ], Response::HTTP_FORBIDDEN);
         } else {
             $validator = Validator::make($request->all(), [
-                'user_id' => 'required|exists:users,id',
+                'user_id' => 'exists:users,id',
                 'address' => 'required',
                 'note' => 'required',
                 'province' => 'required',
