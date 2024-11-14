@@ -13,6 +13,13 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::with('product_pics')->get();
+
+        $products->each(function ($product) {
+            $product->product_pics->each(function ($pic) {
+                $pic->path = url($pic->path);
+            });
+        });
+
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'Success',
