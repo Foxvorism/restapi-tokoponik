@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,6 +23,24 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::find($id);
+
+        if (!$user) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'User not found'
+            ]);
+        } else {
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Success',
+                'data' => $user
+            ], Response::HTTP_OK);
+        }
+    }
+
+    public function userInfo()
+    {
+        $user = User::find(Auth::id());
 
         if (!$user) {
             return response()->json([

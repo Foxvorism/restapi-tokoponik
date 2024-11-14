@@ -30,6 +30,7 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
     Route::prefix('users')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('user.index');
         Route::get('/{id}', [UserController::class, 'show'])->name('user.show');
+        Route::get('/info', [UserController::class, 'userInfo'])->name('user.info');
         Route::post('/store', [UserController::class, 'store'])->name('user.store');
         Route::post('/{id}/update', [UserController::class, 'update'])->name('user.update');
         Route::delete('/{id}/destroy', [UserController::class, 'destroy'])->name('user.destroy');
@@ -62,7 +63,7 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
         Route::delete('/{id}/destroy', [BankController::class, 'destroy'])->name('banks.destroy');
     });
 
-    Route::prefix('carts')->group(function() {
+    Route::prefix('carts')->group(function () {
         Route::get('/', [CartController::class, 'index'])->name('carts.index');
         Route::get('/{id}', [CartController::class, 'show'])->name('carts.show');
         Route::post('/store', [CartController::class, 'store'])->name('carts.store');
@@ -70,7 +71,7 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
         Route::delete('/{id}/destroy', [CartController::class, 'destroy'])->name('carts.destroy');
     });
 
-    Route::prefix('transactions')->group(function() {
+    Route::prefix('transactions')->group(function () {
         Route::get('/', [TransactionController::class, 'index'])->name('transactions.index');
         Route::post('/checkout', [TransactionController::class, 'checkout'])->name('transaction.checkout');
         Route::post('/{id}/add-proof', [TransactionController::class, 'addProof'])->name('transactions.add-proof');
@@ -78,7 +79,7 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
         Route::delete('/{id}/destroy', [TransactionController::class, 'destroy'])->name('transaction.destroy');
     });
 
-    Route::prefix('ratings')->group(function() {
+    Route::prefix('ratings')->group(function () {
         Route::get('/', [RatingController::class, 'index'])->name('ratings.index');
         Route::post('/store', [RatingController::class, 'store'])->name('ratings.store');
         Route::get('/{id}', [RatingController::class, 'show'])->name('ratings.show');
@@ -87,7 +88,7 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
         Route::get('/get-average/{product_id}', [RatingController::class, 'getAverage'])->name('ratings.get-average');
     });
 
-    Route::prefix('wishlists')->group(function() {
+    Route::prefix('wishlists')->group(function () {
         Route::get('/id/user', [WishlistController::class, 'user'])->name('wishlists.user');
         Route::post('/store', [WishlistController::class, 'store'])->name('wishlists.store');
         Route::delete('/{id}/destroy', [WishlistController::class, 'destroy'])->name('wishlists.destroy');
