@@ -161,7 +161,7 @@ class BlogController extends Controller
 
     public function getWithLimit(int $limit)
     {
-        $blogs = Blog::with('user')->with('blog_pics')->with('blog_links')->limit($limit)->get();
+        $blogs = Blog::with('user')->with('blog_pics')->with('blog_links')->orderBy('created_at', 'desc')->limit($limit)->get();
 
         $blogs->each(function ($blog) {
             $blog->blog_pics->each(function ($pic) {
