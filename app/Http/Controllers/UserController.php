@@ -116,6 +116,31 @@ class UserController extends Controller
         }
     }
 
+    public function updateProfile(Request $request, $id)
+    {
+        $user = User::find($id);
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:15',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], Response::HTTP_BAD_REQUEST);
+        } else {
+            $user->update($request->all());
+            return response()->json([
+                'status' => Response::HTTP_CREATED,
+                'message' => 'User updated successfully',
+                'data' => $user
+            ], Response::HTTP_CREATED);
+        }
+    }
+
     public function destroy($id)
     {
         $user = User::find($id);
