@@ -149,4 +149,22 @@ class RatingController extends Controller
             ], Response::HTTP_OK);
         }
     }
+
+    public function getReview($productId)
+    {
+        $reviewCount = Rating::where('product_id', $productId)->count();
+
+        if ($reviewCount === 0) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Product not found or no reviews available'
+            ], Response::HTTP_NOT_FOUND);
+        } else {
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Success',
+                'review_count' => $reviewCount
+            ], Response::HTTP_OK);
+        }
+    }
 }
