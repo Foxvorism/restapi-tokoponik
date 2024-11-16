@@ -56,6 +56,24 @@ class AddressController extends Controller
         }
     }
 
+    public function getAddressByUserId($userId)
+    {
+        $addresses = Address::where('user_id', $userId)->get();
+
+    if ($addresses->isEmpty()) {
+        return response()->json([
+            'status' => Response::HTTP_NOT_FOUND,
+            'message' => 'Address not found'
+        ]);
+    }
+
+    return response()->json([
+        'status' => Response::HTTP_OK,
+        'message' => 'Success',
+        'data' => $addresses
+        ], Response::HTTP_OK);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

@@ -51,6 +51,7 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
         Route::get('/', [AddressController::class, 'index'])->name('address.index');
         Route::get('/{id}', [AddressController::class, 'show'])->name('address.show');
         Route::get('/id/user', [AddressController::class, 'user'])->name('address.user');
+        Route::get('/user/{userId}', [AddressController::class, 'getAddressByUserId'])->name('address.get-by-user-id');
         Route::post('/store', [AddressController::class, 'store'])->name('address.store');
         Route::post('/{id}/update', [AddressController::class, 'update'])->name('address.update');
         Route::delete('/{id}/destroy', [AddressController::class, 'destroy'])->name('address.destroy');
