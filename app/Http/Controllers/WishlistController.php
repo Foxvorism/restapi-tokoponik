@@ -12,7 +12,15 @@ class WishlistController extends Controller
 {
     public function user()
     {
-        $wishlist = Wishlist::with('user')->where('user_id', Auth::id())->get();
+        $wishlist = Wishlist::with(['user', 'product', 'product.product_pics'])
+            ->where('user_id', Auth::id())
+            ->get();
+
+        $wishlist->each(function ($item) {
+            $item->product->product_pics->each(function ($pic) {
+                $pic->path = url($pic->path); // Prepend the full URL to the path
+            });
+        });
 
         if (!$wishlist) {
             return response()->json([
