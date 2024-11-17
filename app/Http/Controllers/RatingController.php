@@ -169,7 +169,7 @@ class RatingController extends Controller
 
     public function getAverage($productId)
     {
-        $product = Rating::find($productId);
+        $product = Rating::where('product_id', $productId);
         $averageRating = number_format($product?->avg('rating'), 2);
 
         if (!$product) {
