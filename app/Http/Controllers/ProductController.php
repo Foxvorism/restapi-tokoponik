@@ -79,7 +79,7 @@ class ProductController extends Controller
                     $path = $file->storeAs('photos', $fileName, 'public');
                     ProductPic::create([
                         'product_id' => $product->id,
-                        'path' => 'storage/'. $path
+                        'path' => 'storage/' . $path
                     ]);
                 }
             }
@@ -173,10 +173,10 @@ class ProductController extends Controller
             ->leftJoin('ratings', 'products.id', '=', 'ratings.product_id')
             ->select('products.*', \DB::raw('ROUND(AVG(ratings.rating), 2) as average_rating'))
             ->groupBy('products.id')
-            ->orderBy('average_rating', 'desc')
+            ->orderBy('average_rating', 'asc')
             ->limit($limit)
             ->get();
-        
+
         $products->each(function ($product) {
             $product->product_pics->each(function ($pic) {
                 $pic->path = url($pic->path);
