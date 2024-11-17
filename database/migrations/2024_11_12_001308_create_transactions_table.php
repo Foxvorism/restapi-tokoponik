@@ -12,7 +12,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('bank_id')->constrained()->onDelete('cascade');
-            $table->decimal('grand_total',10,2);
+            $table->foreignId('address_id')->constrained()->onDelete('cascade');
+            $table->decimal('grand_total', 10, 2);
             $table->string('status');
             $table->string('proof')->nullable()->default(null);
             $table->timestamps();

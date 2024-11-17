@@ -13,22 +13,23 @@ use Symfony\Component\HttpFoundation\Response;
 class TransactionController extends Controller
 {
     public function index()
-{
-    $transactions = Transaction::with(['transaction_detail', 'bank', 'user'])
-        ->where('user_id', Auth::id())
-        ->get();
+    {
+        $transactions = Transaction::with(['transaction_detail', 'bank', 'user'])
+            ->where('user_id', Auth::id())
+            ->get();
 
-    return response()->json([
-        'status' => Response::HTTP_OK,
-        'message' => 'Success',
-        'data' => $transactions,
-    ], Response::HTTP_OK);
-}
+        return response()->json([
+            'status' => Response::HTTP_OK,
+            'message' => 'Success',
+            'data' => $transactions,
+        ], Response::HTTP_OK);
+    }
 
     public function checkout(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'bank_id' => 'required|exists:banks,id',
+            'address_id' => 'required|exists:address,id',
         ]);
 
         if ($validator->fails()) {
@@ -54,6 +55,7 @@ class TransactionController extends Controller
         $transaction = Transaction::create([
             'user_id' => Auth::id(),
             'bank_id' => $request->bank_id,
+            'address_id' => $request->address_id,
             'grand_total' => $grandTotal,
             'status' => 'pending',
             'proof' => null,

@@ -12,6 +12,7 @@ class Transaction extends Model
     protected $fillable = [
         'user_id',
         'bank_id',
+        'address_id',
         'grand_total',
         'status',
         'proof',
@@ -25,6 +26,11 @@ class Transaction extends Model
     public function bank()
     {
         return $this->belongsTo(Bank::class);
+    }
+    
+    public function address()
+    {
+        return $this->belongsTo(Address::class);
     }
 
     public function transaction_detail()
