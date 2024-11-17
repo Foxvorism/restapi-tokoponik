@@ -14,7 +14,7 @@ class BlogController extends Controller
 {
     public function index()
     {
-        $blogs = Blog::with('user')->with('blog_pics')->with('blog_links')->get();
+        $blogs = Blog::with('user')->with('blog_pics')->get();
 
         $blogs->each(function ($blog) {
             $blog->blog_pics->each(function ($pic) {
