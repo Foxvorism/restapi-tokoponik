@@ -12,7 +12,10 @@ class CartController extends Controller
 {
     public function index()
     {
-        $carts = Cart::with(['product', 'product.product_pics'])->where('user_id', Auth::id())->get();
+        $carts = Cart::with(['product', 'product.product_pics'])
+            ->where('user_id', Auth::id())
+            ->where('status', 'pending')
+            ->get();
 
         $carts->each(function ($item) {
             $item->product->product_pics->each(function ($pic) {
@@ -29,7 +32,7 @@ class CartController extends Controller
 
     public function getTotal()
     {
-        $total = Cart::where('user_id', Auth::id())
+        $total = Cart::where('user_id', Auth::id())->where('status', 'pending')
             ->join('products', 'carts.product_id', '=', 'products.id')
             ->selectRaw('SUM(products.price * carts.qty) as total')
             ->value('total');
