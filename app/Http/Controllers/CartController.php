@@ -12,12 +12,43 @@ class CartController extends Controller
 {
     public function index()
     {
-        $carts = Cart::with('product')->where('user_id', Auth::id())->get();
+        $carts = Cart::with(['product', 'product.product_pics'])->where('user_id', Auth::id())->get();
+
+        $carts->each(function ($item) {
+            $item->product->product_pics->each(function ($pic) {
+                $pic->path = url($pic->path);
+            });
+        });
+
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'Success',
             'data' => $carts
         ], Response::HTTP_OK);
+    }
+
+    public function getTotal()
+    {
+        $total = Cart::where('user_id', Auth::id())
+            ->join('products', 'carts.product_id', '=', 'products.id')
+            ->selectRaw('SUM(products.price * carts.qty) as total')
+            ->value('total');
+
+        $total = (int) ($total ?? 0);
+
+        if (!$total) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Cart is empty',
+                'data' => null
+            ]);
+        } else {
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Total calculated successfully',
+                'data' => $total
+            ], Response::HTTP_OK);
+        }
     }
 
     public function store(Request $request)
@@ -51,7 +82,7 @@ class CartController extends Controller
 
     public function show(string $id)
     {
-        $cart = Cart::with('user','product')->find($id);
+        $cart = Cart::with('user', 'product')->find($id);
 
         if (!$cart) {
             return response()->json([
@@ -112,9 +143,9 @@ class CartController extends Controller
             ], Response::HTTP_FORBIDDEN);
         } else {
             if (!$cart) {
-            return response()->json([
-                'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'Cart item not found'
+                return response()->json([
+                    'status' => Response::HTTP_NOT_FOUND,
+                    'message' => 'Cart item not found'
                 ]);
             } else {
                 $cart->delete();
