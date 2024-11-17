@@ -68,7 +68,7 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
     Route::prefix('carts')->group(function () {
         Route::get('/', [CartController::class, 'index'])->name('carts.index');
         Route::get('/{id}', [CartController::class, 'show'])->name('carts.show');
-        Route::get('/all/total', [CartController::class, 'getTotal'])->name('carts.total');
+        Route::get('/total/all', [CartController::class, 'getTotal'])->name('carts.total');
         Route::post('/store', [CartController::class, 'store'])->name('carts.store');
         Route::post('/{id}/update', [CartController::class, 'update'])->name('carts.update');
         Route::delete('/{id}/destroy', [CartController::class, 'destroy'])->name('carts.destroy');
