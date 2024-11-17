@@ -29,7 +29,7 @@ class TransactionController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'bank_id' => 'required|exists:banks,id',
-            'address_id' => 'required|exists:address,id',
+            'address_id' => 'required|exists:addresses,id',
         ]);
 
         if ($validator->fails()) {
