@@ -13,24 +13,24 @@ use Symfony\Component\HttpFoundation\Response;
 class TransactionController extends Controller
 {
     public function index()
-    {
-        $transactions = Transaction::with(['transaction_detail', 'bank'])
-            ->where('user_id', Auth::id())
-            ->get();
+{
+    $transactions = Transaction::with(['transaction_detail', 'bank', 'user'])
+        ->where('user_id', Auth::id())
+        ->get();
 
-        return response()->json([
-            'status' => Response::HTTP_OK,
-            'message' => 'Success',
-            'data' => $transactions,
-        ], Response::HTTP_OK);
-    }
+    return response()->json([
+        'status' => Response::HTTP_OK,
+        'message' => 'Success',
+        'data' => $transactions,
+    ], Response::HTTP_OK);
+}
 
     public function checkout(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'bank_id' => 'required|exists:banks,id',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json([
                 'status' => Response::HTTP_BAD_REQUEST,
@@ -38,18 +38,18 @@ class TransactionController extends Controller
                 'errors' => $validator->errors(),
             ], Response::HTTP_BAD_REQUEST);
         }
-    
+
         // Retrieve all cart items for the user with status "pending"
         $cartItems = Cart::where('user_id', Auth::id())
             ->where('status', 'pending')
             ->with('product') // Ensure we load the product relationship to access prices
             ->get();
-    
+
         // Calculate the grand total from cart items
         $grandTotal = $cartItems->sum(function ($cartItem) {
             return $cartItem->qty * $cartItem->product->price;
         });
-    
+
         // Create the transaction
         $transaction = Transaction::create([
             'user_id' => Auth::id(),
@@ -58,7 +58,7 @@ class TransactionController extends Controller
             'status' => 'pending',
             'proof' => null,
         ]);
-    
+
         // Move items from cart to transaction details and update cart status
         foreach ($cartItems as $cartItem) {
             TransactionDetail::create([
@@ -66,11 +66,11 @@ class TransactionController extends Controller
                 'product_id' => $cartItem->product_id,
                 'qty' => $cartItem->qty
             ]);
-    
+
             // Update cart item status to "checkout"
             $cartItem->update(['status' => 'checkout']);
         }
-    
+
         return response()->json([
             'status' => Response::HTTP_CREATED,
             'message' => 'Transaction created successfully',
@@ -105,7 +105,7 @@ class TransactionController extends Controller
                 $file = $request->file('proof');
                 $fileName = "proof" . $transaction->id . "pic." . $file->getClientOriginalExtension();
                 $path = $file->storeAs('proof', $fileName, 'public');
-                
+
                 $transaction->update([
                     'proof' => $path,
                     'status' => 'waiting for verification',
