@@ -23,7 +23,6 @@ class RatingController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|exists:users,id',
             'product_id' => 'required|exists:products,id',
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string'
@@ -37,7 +36,7 @@ class RatingController extends Controller
             ], Response::HTTP_BAD_REQUEST);
         } else {
             $rating = Rating::create([
-                'user_id' => $request->user_id,
+                'user_id' => Auth::id(),
                 'product_id' => $request->product_id,
                 'rating' => $request->rating,
                 'comment' => $request->comment
@@ -132,15 +131,53 @@ class RatingController extends Controller
         }
     }
 
-    public function getAverage($productId)
+    public function productRating(string $product_id)
     {
-        $averageRating = number_format(Rating::where('product_id', $productId)->avg('rating'), 2);
+        $rating = Rating::with('user', 'product')->where('product_id', $product_id)->get();
 
-        if (is_null($averageRating)) {
+        if (!$rating) {
             return response()->json([
                 'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'Product not found or no ratings available'
-            ], Response::HTTP_NOT_FOUND);
+                'message' => 'Rating not found'
+            ]);
+        } else {
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Success',
+                'data' => $rating
+            ], Response::HTTP_OK);
+        }
+    }
+
+    public function productRatingLimit(string $product_id, string $limit)
+    {
+        $rating = Rating::with('user', 'product')->where('product_id', $product_id)->limit($limit)->get();
+
+        if (!$rating) {
+            return response()->json([
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Rating not found'
+            ]);
+        } else {
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Success',
+                'data' => $rating
+            ], Response::HTTP_OK);
+        }
+    }
+
+    public function getAverage($productId)
+    {
+        $product = Rating::find($productId);
+        $averageRating = number_format($product?->avg('rating'), 2);
+
+        if (!$product) {
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Product not found or no ratings available',
+                'average_rating' => "0.00"
+            ], Response::HTTP_OK);
         } else {
             return response()->json([
                 'status' => Response::HTTP_OK,
@@ -156,9 +193,10 @@ class RatingController extends Controller
 
         if ($reviewCount === 0) {
             return response()->json([
-                'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'Product not found or no reviews available'
-            ], Response::HTTP_NOT_FOUND);
+                'status' => Response::HTTP_OK,
+                'message' => 'Product not found or no reviews available',
+                'review_count' => 0
+            ], Response::HTTP_OK);
         } else {
             return response()->json([
                 'status' => Response::HTTP_OK,

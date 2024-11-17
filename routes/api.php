@@ -87,6 +87,8 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
         Route::get('/{id}', [RatingController::class, 'show'])->name('ratings.show');
         Route::post('/{id}/update', [RatingController::class, 'update'])->name('ratings.update');
         Route::delete('/{id}/destroy', [RatingController::class, 'destroy'])->name('ratings.destroy');
+        Route::get('/product/{product_id}', [RatingController::class, 'productRating'])->name('ratings.product');
+        Route::get('/product/{product_id}/{limit}', [RatingController::class, 'productRatingLimit'])->name('ratings.productLimit');
         Route::get('/get-average/{product_id}', [RatingController::class, 'getAverage'])->name('ratings.get-average');
         Route::get('/get-review/{product_id}', [RatingController::class, 'getReview'])->name('ratings.get-review');
     });
