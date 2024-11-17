@@ -15,13 +15,13 @@ class BlogController extends Controller
     public function index()
     {
         $blogs = Blog::with('user')->with('blog_pics')->with('blog_links')->get();
-        
+
         $blogs->each(function ($blog) {
             $blog->blog_pics->each(function ($pic) {
                 $pic->pic_path = url($pic->pic_path);
             });
         });
-        
+
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'Success',
@@ -56,9 +56,7 @@ class BlogController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required',
             'description' => 'required',
-            'photos.*' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'links' => 'array',
-            'links.*' => 'url'
+            'photos' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -74,15 +72,15 @@ class BlogController extends Controller
                 'user_id' => Auth::user()->id,
             ]);
 
-            if ($request->hasFile('photos')) {
-                foreach ($request->file('photos') as $index => $file) {
-                    $fileName = "blog" . $blog->id . "pic" . ($index + 1) . "." . $file->getClientOriginalExtension();
-                    $path = $file->storeAs('photos', $fileName, 'public');
-                    BlogPic::create([
-                        'blog_id' => $blog->id,
-                        'pic_path' => 'storage/' . $path,
-                    ]);
-                }
+            if ($request->hasFile('photo')) {
+                $file = $request->file('photo');
+                $fileName = "blog" . $blog->id . "pic" . "." . $file->getClientOriginalExtension();
+                $path = $file->storeAs('photos', $fileName, 'public');
+
+                BlogPic::create([
+                    'blog_id' => $blog->id,
+                    'pic_path' => 'storage/' . $path,
+                ]);
             }
 
             if ($request->has('links')) {
@@ -96,7 +94,7 @@ class BlogController extends Controller
 
             return response()->json([
                 'status' => Response::HTTP_CREATED,
-                'message' => 'Blog created successfully with photos',
+                'message' => 'Blog created successfully with photo',
                 'data' => $blog->load('blog_pics'),
             ], Response::HTTP_CREATED);
         }
@@ -111,27 +109,52 @@ class BlogController extends Controller
                 'status' => Response::HTTP_FORBIDDEN,
                 'message' => 'Not authorized',
             ], Response::HTTP_FORBIDDEN);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'title' => 'required',
+            'description' => 'required',
+            'photo' => 'sometimes|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], Response::HTTP_BAD_REQUEST);
         } else {
-            $validator = Validator::make($request->all(), [
-                'title' => 'required',
-                'description' => 'required',
-                'user_id' => 'required|exists:users,id',
+            $blog->update([
+                'title' => $request->title,
+                'description' => $request->description
             ]);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => Response::HTTP_BAD_REQUEST,
-                    'message' => 'Validation error',
-                    'errors' => $validator->errors()
-                ], Response::HTTP_BAD_REQUEST);
-            } else {
-                $blog->update($request->all());
-                return response()->json([
-                    'status' => Response::HTTP_CREATED,
-                    'message' => 'Blog updated successfully',
-                    'data' => $blog
-                ], Response::HTTP_CREATED);
+            if ($request->hasFile('photo')) {
+                $existingPhoto = $blog->blog_pics->first();
+                if ($existingPhoto) {
+                    $oldPhotoPath = public_path('storage/' . $existingPhoto->pic_path);
+                    if (file_exists($oldPhotoPath)) {
+                        unlink($oldPhotoPath);
+                    }
+
+                    $existingPhoto->delete();
+                }
+
+                $file = $request->file('photo');
+                $fileName = "blog" . $blog->id . "pic" . "." . $file->getClientOriginalExtension();
+                $path = $file->storeAs('photos', $fileName, 'public');
+
+                BlogPic::create([
+                    'blog_id' => $blog->id,
+                    'pic_path' => 'storage/' . $path,
+                ]);
             }
+
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Blog updated successfully',
+                'data' => $blog->load('blog_pics'),
+            ], Response::HTTP_OK);
         }
     }
 
@@ -168,7 +191,7 @@ class BlogController extends Controller
                 $pic->pic_path = url($pic->pic_path);
             });
         });
-        
+
         return response()->json([
             'status' => Response::HTTP_OK,
             'message' => 'Success',
