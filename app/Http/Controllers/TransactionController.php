@@ -14,9 +14,17 @@ class TransactionController extends Controller
 {
     public function index()
     {
-        $transactions = Transaction::with(['transaction_detail', 'bank', 'user'])
+        $transactions = Transaction::with(['transaction_detail.product.product_pics', 'bank', 'user', 'address'])
             ->where('user_id', Auth::id())
             ->get();
+
+        $transactions->each(function ($transaction) {
+            $transaction->transaction_detail->each(function ($detail) {
+                $detail->product->product_pics->each(function ($pic) {
+                    $pic->path = url($pic->path);
+                });
+            });
+        });
 
         return response()->json([
             'status' => Response::HTTP_OK,
